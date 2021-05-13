@@ -40,11 +40,22 @@ done
 
 shell="${1:-$PYENV_SHELL}"
 if [ -z "$shell" ]; then
-  shell="$(ps -p "$PPID" -o 'args=' 2>/dev/null || true)"
+  if [ -n "$BASH_VERSION" ]; then
+    shell=bash
+  elif [ -n "$ZSH_VERSION" ]; then
+    shell=zsh
+  elif [ -n "$KSH_VERSION" ]; then
+    shell=ksh
+  elif [ -n "$FISH_VERSION" ]; then
+    shell=fish
+  else
+    shell="$(ps -p "$PPID" -o 'args=' 2>/dev/null || true)"
+  fi
   shell="${shell##-}"
   shell="${shell%% *}"
   shell="${shell:-$SHELL}"
   shell="${shell##*/}"
+  shell="${shell%%-*}"
 fi
 
 if [ -z "$print" ]; then
